@@ -1,0 +1,5 @@
+*.pyc
+*.tar
+*.zip
+private-settings.py
+static/

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" />
+        
+    </head>
+    <body>
+        <div class="hero-unit"><p class="hero-unit">Festagent test site</p></div>
+        <div class="btn-group">
+            <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+            Sort by
+            <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li><a href="#" class="order" data-order="biginning_date">Beginning date</a></li>
+                <li><a href="#" class="order" data-order="name">Name</a></li>
+            </ul>
+        </div>
+        
+        <div class="" id="fest_list">
+            {% include "core/fest_list_div.html" %}
+        </div>
+        
+        
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+        <script type="text/javascript"src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            function ajaxOrder(event) {
+                event.preventDefault();
+                var link = $(event.target);
+                
+                var request_data = { 'ordering': link.attr("data-order") };
+                    
+                $.ajax({
+                    url : "{% url 'core_fest_list' %}",
+                    type : 'GET',
+                    data : request_data,
+                    dataType : 'json',
+                    success : orderSuccess,
+                    error : function (xhr, textStatus, errorThrown) {
+                        //log ajax errors
+                        console.log("There was an error processing ajax request: \n" +
+                            "\t -the text status is: ' " + textStatus + "'\n" +
+                            "\t -the error thrown is:' " + String(errorThrown) + "'" +
+                            "\t -the data sent  is: ' " + this.data + "'" +
+                            "\t -the method is: ' " + this.type + "'");
+                    }
+                });
+            }
+
+            function orderSuccess(json_response) {
+
+                if (json_response.success == "True") {
+
+                    // Get rid of the existing auth links
+                    $("#fest_list").empty();
+                    // renew the contents of tagbox
+                    $("#fest_list").prepend(json_response.html);
+
+                } else {
+                    //add the error text to the errors div
+                    $("#fest_list").append(json_response.html);
+                }
+        }
+
+
+            $(document).ready(function () {
+                $("a.order").click(function (event) {
+                    ajaxOrder(event)})
+            });
+        </script>
+    </body>
+</html>
